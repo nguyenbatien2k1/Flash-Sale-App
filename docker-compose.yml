@@ -1,0 +1,41 @@
+version: '3.6'
+services:
+  app:
+    image: flash-sale
+    build: .
+    ports:
+      - 8081:8081
+    working_dir: /app
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    environment:
+      # MONGODB_URL: mongodb://admin:admin@mongo:27017/?retryWrites=true&w=majority
+      SHOPIFY_API_KEY: b45c25c2b7db4dbad7e35840e272869e
+      SHOPIFY_API_SECRET: dfb0e5b3bc2699a8e8f2a7e55caae8fb
+      HOST: https://quick-start-3ef77817.myshopify.com
+      SCOPES: read_products,write_products,read_orders,write_orders
+    networks:
+      - flashSaleApp
+      
+  mongo:
+    image: mongo
+    # ports:
+    #   - 27018:27017
+    # environment:
+      # MONGO_INITDB_DATABASE: flash-sale
+      # MONGO_INITDB_ROOT_USERNAME: admin
+      # MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - ./data:/data/db
+    networks:
+      - flashSaleApp
+# volumes:
+#   data:
+networks:
+  flashSaleApp:
+
+
+
+      

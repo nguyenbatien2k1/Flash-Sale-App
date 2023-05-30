@@ -3,24 +3,24 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const Product = new Schema({
-  id: Number,
-  title: String,
+  admin_graphql_api_id: String,
   body_html: String,
-  vendor: String,
-  product_type: String,
   created_at: Date,
   handle: String,
-  updated_at: Date,
-  published_at: String,
-  template_suffix: String,
-  status: String,
-  published_scope: String,
-  tags: String,
-  admin_graphql_api_id: String,
-  variants: Array,
-  options: Array,
+  id: Number,
+  image: { type: Array, default: null},
   images: Array,
-  image: String
+  options: Array,
+  product_type: String,
+  published_at: Date,
+  published_scope: String,
+  status: String,
+  tags: String,
+  template_suffix: String,
+  title: String,
+  updated_at: Date,
+  variants: Array,
+  vendor: String
 }, {
     timestamps: true
 });

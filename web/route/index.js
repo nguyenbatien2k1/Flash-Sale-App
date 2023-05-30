@@ -120,7 +120,7 @@ const initWebRoutes = (app) => {
     })
 
     // delete campaign
-    router.delete('api/campaigns', async (req, res) => {
+    router.delete('/api/campaigns', async (req, res) => {
         let status = 200
         let error = null
         let campaign_id = req.query.campaign_id
@@ -146,17 +146,39 @@ const initWebRoutes = (app) => {
         return res.status(status).send({success: status === 200, error})
     })
 
-    // get all products
+    // save products from Shopify to database
+    router.get('/api/save-products', async (req, res) => {
+        let status = 200;
+        let error = null;
+        let products = []
+        try {
+            products = await shopify.api.rest.Product.all({
+                session: res.locals.shopify.session,
+            }).then(res => res.data)
+            console.log(products.length)
+            if(products.length > 0) {
+                products.forEach((item) => {
+                    let product = new Product(item);
+                    product.save()
+                })
+            }
+
+            
+        } catch (e) {
+            console.log(`Failed to save products: ${e.message}`);
+            status = 500;
+            error = e.message;
+        }
+        return res.status(status).send({success: status === 200, error})
+    })
+
+    // get all products from database
     router.get('/api/products', async (req, res) => {       
         let status = 200
         let error = null
         let products = []
         try {
-            products = await shopify.api.rest.Product.all({
-                session: res.locals.shopify.session,
-                limit: 5
-            }).then(res => res.data)
-            console.log(products)
+            products = await Product.find({})
         } catch (e) {
             console.log(`Failed to get all products: ${e.message}`)
             status = 500
@@ -177,8 +199,7 @@ const initWebRoutes = (app) => {
                 error = 'Invalid product_id'
             }
             else {
-                product = await shopify.api.rest.Product.find({
-                    session: res.locals.shopify.session,
+                product = await Product.findOne({
                     id: product_id
                 }).then(res => res.data)
                 console.log(product)
@@ -195,14 +216,29 @@ const initWebRoutes = (app) => {
     router.post('/api/product', async (req, res) => {
         let status = 200
         let error = null
+        console.log(req.body)
         try {
-            await Product.create(req.body)        
+            if(!req.body.title) {
+                console.log(`Failed to add product`)
+                status = 500
+                error = 'Failed to add product'
+            }
+            else {
+                const client = shopify.api.clients.Rest({session: res.locals.shopify.session})
+                const newProduct = await client.post({
+                    path: 'products',
+                    data: req.body
+                })
+                console.log(newProduct)
+                await Product.create(req.body)        
+            }
+
         } catch (e) {
             console.log(`Failed to add product: ${e.message}`)
             status = 500
             error = e.message
         }
-        return res.status.apply(status).send({success: status === 200, error})
+        return res.status(status).send({success: status === 200, error})
     })
 
     // update product
@@ -214,9 +250,15 @@ const initWebRoutes = (app) => {
         try {
             if(!product_id) {
                 status = 500
-                error = 'Invalid product'
+                error = 'Invalid product_id'
             }
             else {
+                const client = shopify.api.clients.Rest({session: res.locals.shopify.session})
+                const updateProduct = await client.put({
+                    path: `products/${product_id}`,
+                    data: req.body
+                })
+                // console.log(updateProduct)
                 let update = req.body
                 let doc = await Product.findOneAndUpdate({id: product_id}, update, {new: true})
                 if(!doc) {
@@ -243,6 +285,10 @@ const initWebRoutes = (app) => {
                 error = 'Invalid product_id'
             }
             else {
+                const client = shopify.api.clients.Rest({session: res.locals.shopify.session})
+                const deleteProduct = await client.delete({
+                    path: `products/${product_id}`
+                })
                 let doc = await Product.findOneAndDelete({id: product_id})
                 if(!doc) {
                     status = 500

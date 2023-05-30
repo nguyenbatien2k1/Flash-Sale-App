@@ -1,0 +1,23 @@
+# fly.toml app configuration file generated for sparkling-star-6211 on 2023-05-30T08:43:59+07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "sparkling-star-6211"
+primary_region = "ord"
+
+[env]
+  PORT = "8081"
+  HOST = "https://sparkling-star-6211.fly.dev"
+  SHOPIFY_API_KEY = "b45c25c2b7db4dbad7e35840e272869e"
+  SCOPES = "write_products"
+
+[http_service]
+  internal_port = 8081
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+
+

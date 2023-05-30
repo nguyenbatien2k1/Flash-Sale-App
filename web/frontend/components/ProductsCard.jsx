@@ -31,8 +31,14 @@ export function ProductsCard() {
     setIsLoading(true);
     // const response = await fetch("/api/products/create");
       // const res = await fetch("/api/campaigns")
-      const res = await fetch("/api/products")
-      console.log(res)
+      // const res = await fetch("/api/products")
+      // const res = await fetch(`/api/product`, {
+      //   method: 'POST',
+      //   data: {
+      //     title: 'TIENNNNN'
+      //   }
+      // })
+      // console.log(res)
       setIsLoading(false);
     return;
 

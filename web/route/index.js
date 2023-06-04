@@ -60,7 +60,7 @@ const initWebRoutes = (app) => {
                     products: req.body.products || [],
                     discount_rate: req.body.discount_rate || 0,
                     payment: req.body.payment || '',
-                    active: req.body.active || ''
+                    active: req.body.active || false
                 })
                 newCampaign.save()
             }
@@ -87,12 +87,12 @@ const initWebRoutes = (app) => {
             else {
                 let update = {
                     campaign_name: req.body.campaign_name,
-                    start_time: req.body.start_time,
-                    end_time: req.body.end_time,
-                    products: req.body.products,
-                    discount_rate: req.body.discount_rate,
-                    payment: req.body.payment,
-                    active: req.body.active
+                    start_time: req.body.start_time || '',
+                    end_time: req.body.end_time || '',
+                    products: req.body.products || [],
+                    discount_rate: req.body.discount_rate || 0,
+                    payment: req.body.payment || '',
+                    active: req.body.active || false
                 }
                 let doc = await Campaign.findOneAndUpdate(
                     {

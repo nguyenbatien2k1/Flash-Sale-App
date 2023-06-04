@@ -25,6 +25,8 @@ services:
       MONGO_INITDB_DATABASE: flash-sale
     volumes:
       - ./data:/data/db
+volumes:
+  data:
 
 
 
